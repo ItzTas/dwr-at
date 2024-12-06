@@ -1,7 +1,3 @@
-interface FormData {
-    [key: string]: any;
-}
-
 function generateSubtitle(
     item: any,
     translate: (key: string) => string,
@@ -52,29 +48,4 @@ function getTitle(action_type: string): string {
     }
 }
 
-function validateDiaper(data: FormData): string[] {
-    return [];
-}
-
-function validateSleep(data: FormData): string[] {
-    return [];
-}
-
-function validateEat(data: FormData): string[] {
-    return [];
-}
-
-function validateFields(data: FormData, actionType: string): string[] {
-    switch (actionType) {
-        case '1':
-            return validateSleep(data);
-        case '2':
-            return validateEat(data);
-        case '3':
-            return validateDiaper(data);
-        default:
-            return validateEat(data);
-    }
-}
-
-export { generateSubtitle, getTitle, validateFields };
+export { generateSubtitle, getTitle };

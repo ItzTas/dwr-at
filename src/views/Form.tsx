@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { getTitle, validateFields } from '../utils/action';
+import { getTitle } from '../utils/action';
 import Sleep, { IDataSleep } from '../components/custom/sleep';
 import Eat, { IDataEat } from '../components/custom/eat';
 import Diaper, { IDataDiaper } from '../components/custom/diaper';
@@ -82,14 +82,6 @@ export default function Form(): React.JSX.Element {
     }
 
     function handleAdd() {
-        const fields = validateFields(data, actionType);
-        if (fields.length > 0) {
-            showAlertMessage(
-                `Os campos ${fields.join(', ')} são obrigatórios`,
-                'warning',
-            );
-            return;
-        }
         const bebedataStr = localStorage.getItem('bebedata') || '[]';
         const bebedata = JSON.parse(bebedataStr);
         const newData = { ...data, id: bebedata.length };
