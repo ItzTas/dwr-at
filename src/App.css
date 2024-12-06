@@ -5,3 +5,7 @@ html,
 body {
     font-family: 'JetBrains Mono', monospace;
 }
+
+body {
+    background-color: white;
+}
