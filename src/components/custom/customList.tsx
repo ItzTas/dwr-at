@@ -1,5 +1,5 @@
 import React from 'react';
-import List from '@mui/material/List';
+import List, { ListProps } from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
@@ -16,7 +16,7 @@ interface IItem {
     action_type: number;
 }
 
-interface ICustomListProps {
+interface ICustomListProps extends ListProps {
     items: IItem[];
 }
 
@@ -51,11 +51,6 @@ export default function CustomList({
                 const typeStr = actionTypeListToInt[item.action_type];
                 return (
                     <ListItem
-                        sx={{
-                            backgroundColor: '#fff',
-                            borderRadius: '60px',
-                            marginTop: '1em',
-                        }}
                         id={`new-item-list-${index}`}
                         onClick={() => navigate(`/${item.action_type}/${item.id}`)}
                         key={item.id}
@@ -67,7 +62,10 @@ export default function CustomList({
                         </ListItemAvatar>
                         <ListItemText
                             primary={translate(typeStr)}
-                            secondary={generateSubtitle(item, translate)}
+                            secondary={generateSubtitle(
+                                item,
+                                translate as unknown as boolean,
+                            )}
                         />
                     </ListItem>
                 );

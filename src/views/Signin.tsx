@@ -39,14 +39,27 @@ export default function SignIn(): React.JSX.Element {
         },
     });
 
+    const { showAlertMessage } = useAppContext();
+
     function verifyLogin() {
-        localStorage.setItem(
-            'session',
-            JSON.stringify({
-                email: data.email.value,
-                password: data.password.value,
-            }),
-        );
+        const session = localStorage.getItem('session');
+        if (!session) {
+            navigate('/signup');
+            return;
+        }
+
+        const sessionData = JSON.parse(session) as {
+            email: string;
+            password: string;
+        };
+
+        const emailMatch = sessionData.email === data.email.value;
+        const passwordMatch = sessionData.password === data.password.value;
+
+        if (!emailMatch || !passwordMatch) {
+            showAlertMessage('Usuário ou senha inválidos', 'error');
+            return;
+        }
 
         navigate('/');
     }

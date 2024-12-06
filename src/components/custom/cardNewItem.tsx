@@ -1,7 +1,10 @@
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
-import { Card, Fab, Grid, Typography } from '..';
 import { SvgIconProps } from '@mui/material';
+import CardComponent from '../card';
+import GridComponent from '../grid';
+import TextComponent from '../typography';
+import FabComponent from '../fab';
 
 interface Props {
     Icon: React.ComponentType<SvgIconProps>;
@@ -19,13 +22,13 @@ export default function CardNewItemComponent({
     const navigate = useNavigate();
 
     return (
-        <Card
+        <CardComponent
             sx={{
                 overflow: 'visible',
                 borderRadius: '10%',
             }}
         >
-            <Grid
+            <GridComponent
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -39,7 +42,7 @@ export default function CardNewItemComponent({
                         color: color,
                     }}
                 />
-                <Typography
+                <TextComponent
                     sx={{
                         fontSize: '.85em',
                         marginTop: '0.5em',
@@ -50,16 +53,16 @@ export default function CardNewItemComponent({
                     }}
                 >
                     {title}
-                </Typography>
-            </Grid>
-            <Grid
+                </TextComponent>
+            </GridComponent>
+            <GridComponent
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                 }}
             >
-                <Typography
+                <TextComponent
                     sx={{
                         marginTop: '0.5em',
                         fontSize: '0.8em',
@@ -68,16 +71,16 @@ export default function CardNewItemComponent({
                     }}
                 >
                     Adicione algo
-                </Typography>
-            </Grid>
-            <Grid
+                </TextComponent>
+            </GridComponent>
+            <GridComponent
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                 }}
             >
-                <Fab
+                <FabComponent
                     size='small'
                     sx={{
                         color: color,
@@ -88,8 +91,8 @@ export default function CardNewItemComponent({
                     onClick={() => navigate(`/new/${actionType}`)}
                 >
                     <AddIcon />
-                </Fab>
-            </Grid>
-        </Card>
+                </FabComponent>
+            </GridComponent>
+        </CardComponent>
     );
 }
