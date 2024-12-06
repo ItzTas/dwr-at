@@ -21,6 +21,10 @@ export default function CardNewItemComponent({
 }: Props) {
     const navigate = useNavigate();
 
+    function handleClick() {
+        navigate(`/new/${actionType}`);
+    }
+
     return (
         <CardComponent
             sx={{
@@ -88,7 +92,7 @@ export default function CardNewItemComponent({
                         position: 'relative',
                         bottom: '-20px',
                     }}
-                    onClick={() => navigate(`/new/${actionType}`)}
+                    onClick={handleClick}
                 >
                     <AddIcon />
                 </FabComponent>

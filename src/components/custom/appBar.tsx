@@ -4,8 +4,9 @@ import Typography from '@mui/material/Typography';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
-import { IconButton, Box } from '..';
 import React from 'react';
+import IconButtonComponent from '../iconbutton';
+import BoxComponent from '../box';
 
 interface AppBarComponentProps {
     title: string;
@@ -20,10 +21,15 @@ export default function AppBarComponent({
 }: AppBarComponentProps): React.JSX.Element {
     const navigate = useNavigate();
 
+    function handleBack() {
+        navigate('/');
+        window.location.reload();
+    }
+
     return (
         <AppBar position='static'>
             <Toolbar>
-                <IconButton
+                <IconButtonComponent
                     size='large'
                     edge='start'
                     color='inherit'
@@ -32,10 +38,10 @@ export default function AppBarComponent({
                         position: 'relative',
                         zIndex: '2',
                     }}
-                    onClick={() => navigate('/')}
+                    onClick={handleBack}
                 >
                     <ArrowBackIcon />
-                </IconButton>
+                </IconButtonComponent>
                 <Typography
                     variant='h6'
                     component='div'
@@ -51,14 +57,14 @@ export default function AppBarComponent({
                     {title}
                 </Typography>
                 {id ? (
-                    <Box
+                    <BoxComponent
                         sx={{
                             display: { xs: 'flex', md: 'none' },
                             position: 'absolute',
                             right: '1.5em',
                         }}
                     >
-                        <IconButton
+                        <IconButtonComponent
                             size='large'
                             edge='end'
                             color='inherit'
@@ -70,8 +76,8 @@ export default function AppBarComponent({
                             onClick={onDelete}
                         >
                             <DeleteIcon />
-                        </IconButton>
-                    </Box>
+                        </IconButtonComponent>
+                    </BoxComponent>
                 ) : null}
             </Toolbar>
         </AppBar>

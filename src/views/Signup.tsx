@@ -1,4 +1,3 @@
-import { useAppContext } from '../Context';
 import logo from '../../assets/img/logo.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
@@ -45,7 +44,6 @@ interface FormData {
 
 export default function SignUp() {
     const navigate = useNavigate();
-    const { showAlertMessage } = useAppContext();
 
     const [data, setData] = useState<FormData>({
         email: { value: '', error: null, helperText: null },

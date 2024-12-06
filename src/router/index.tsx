@@ -8,18 +8,17 @@ import SignIn from '../views/Signin';
 import Protected from './protected';
 import SignUp from '../views/Signup';
 import Home from '../views/Home';
-// import Home from '../views/Home';
-// import Settings from '../views/Settings';
-// import Form from '../views/Form';
+import Form from '../views/Form';
+import Settings from '../views/Settings';
 
 const router = createBrowserRouter(
-    //     <Route path='settings' element={<Settings />} />
-    //     <Route path='new/:type' element={<Form />} />
-    //         <Route path=':type/:id' element={<Form />} />
     createRoutesFromElements(
-        <Route path='/'>
+        <Route>
             <Route element={<Protected />}>
                 <Route index element={<Home />} />
+                <Route path='settings' element={<Settings />} />
+                <Route path='new/:type' element={<Form />} />
+                <Route path=':type/:id' element={<Form />} />
             </Route>
             <Route path='signin' element={<SignIn />} />
             <Route path='signup' element={<SignUp />} />

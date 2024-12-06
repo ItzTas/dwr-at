@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
-import { Button, DateTimePicker, Grid, TextField } from '..';
-import { handleInputChange, selectItem } from '../../utils/action';
 import { adjustDateTimeForTimezone } from '../../utils/core';
 import { Dayjs } from 'dayjs';
+import GridComponent from '../grid';
+import TextFieldComponent from '../textfield';
+import ButtonComponent from '../button';
+import DateTimePickerComponent from '../dateTimePicker';
 
 export interface IDataDiaper {
     start_date?: Date | null;
@@ -23,13 +25,38 @@ export default function Diaper({
     translate,
 }: IDiaperProps): React.JSX.Element {
     useEffect(() => {
-        setData({ ...data, action_type: 3 });
+        if (!data.action_type) {
+            setData((prevData) => ({ ...prevData, action_type: 3 }));
+        }
     }, [data, setData]);
 
+    const handleDateChange = (value: Dayjs | null) => {
+        setData((prevData) => ({
+            ...prevData,
+            start_date: value ? value.toDate() : null,
+        }));
+    };
+
+    const handleButtonClick = (type: number) => {
+        setData((prevData) => ({
+            ...prevData,
+            type,
+        }));
+    };
+
+    const handleObservationChange = (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+        setData((prevData) => ({
+            ...prevData,
+            observation: event.target.value,
+        }));
+    };
+
     return (
-        <Grid container spacing={2}>
-            <Grid item xs={12}>
-                <DateTimePicker
+        <GridComponent container spacing={2}>
+            <GridComponent item xs={12}>
+                <DateTimePickerComponent
                     value={
                         data?.start_date ? adjustDateTimeForTimezone(data.start_date) : null
                     }
@@ -37,60 +64,48 @@ export default function Diaper({
                     name='start_date'
                     ampm={false}
                     format='DD/MM/YYYY HH:mm'
-                    onChange={(value: Dayjs | null) => {
-                        handleInputChange(
-                            'start_date',
-                            value ? value.toDate() : null,
-                            data,
-                            setData,
-                        );
-                    }}
+                    onChange={handleDateChange}
                     slots={{
-                        textField: (props) => <TextField {...props} fullWidth />,
+                        textField: (props: any) => (
+                            <TextFieldComponent {...props} fullWidth />
+                        ),
                     }}
                 />
-            </Grid>
+            </GridComponent>
 
-            <Grid item xs={12}>
-                <Button
-                    color={data.type === 1 ? 'secondary' : 'primary'}
-                    onClick={() => selectItem(1, 'type', data, setData)}
+            <GridComponent item xs={12}>
+                <GridComponent
+                    container
+                    spacing={2}
+                    sx={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
                 >
-                    {translate('diaper-wet')}
-                </Button>
-                <Button
-                    color={data.type === 2 ? 'secondary' : 'primary'}
-                    onClick={() => selectItem(2, 'type', data, setData)}
-                >
-                    {translate('diaper-dirty')}
-                </Button>
-                <Button
-                    color={data.type === 3 ? 'secondary' : 'primary'}
-                    onClick={() => selectItem(3, 'type', data, setData)}
-                >
-                    {translate('diaper-both')}
-                </Button>
-                <Button
-                    color={data.type === 4 ? 'secondary' : 'primary'}
-                    onClick={() => selectItem(4, 'type', data, setData)}
-                >
-                    {translate('diaper-clean')}
-                </Button>
-            </Grid>
+                    {['wet', 'dirty', 'both', 'clean'].map((typeKey, index) => (
+                        <GridComponent item key={typeKey}>
+                            <ButtonComponent
+                                color={data.type === index + 1 ? 'secondary' : 'primary'}
+                                onClick={() => handleButtonClick(index + 1)}
+                            >
+                                {translate(`diaper-${typeKey}`)}
+                            </ButtonComponent>
+                        </GridComponent>
+                    ))}
+                </GridComponent>
+            </GridComponent>
 
-            <Grid item xs={12}>
-                <TextField
+            <GridComponent item xs={12}>
+                <TextFieldComponent
                     value={data?.observation || ''}
                     label={translate('observation')}
-                    onChange={(event) =>
-                        handleInputChange('observation', event.target.value, data, setData)
-                    }
+                    onChange={handleObservationChange}
                     name='observation'
                     rows={6}
                     fullWidth
                     multiline
                 />
-            </Grid>
-        </Grid>
+            </GridComponent>
+        </GridComponent>
     );
 }

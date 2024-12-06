@@ -3,15 +3,18 @@ import {
     DateTimePickerProps,
 } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { ptBR } from '@mui/x-date-pickers/locales';
 import React from 'react';
-import { Dayjs } from 'dayjs';
+
+interface Props extends Omit<DateTimePickerProps<any, any>, 'TextFieldProps'> {
+    fullWidth?: boolean;
+}
 
 export default function DateTimePickerComponent({
+    fullWidth = false,
     ...props
-}: DateTimePickerProps<Dayjs, boolean>): React.JSX.Element {
+}: Props): React.JSX.Element {
     return (
         <LocalizationProvider
             localeText={
@@ -19,9 +22,14 @@ export default function DateTimePickerComponent({
             }
             dateAdapter={AdapterDayjs}
         >
-            <DemoContainer components={['DateTimePicker']}>
-                <DateTimePicker {...props} />
-            </DemoContainer>
+            <DateTimePicker
+                {...props}
+                slotProps={{
+                    textField: {
+                        fullWidth: fullWidth,
+                    },
+                }}
+            />
         </LocalizationProvider>
     );
 }

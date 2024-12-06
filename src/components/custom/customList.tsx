@@ -9,7 +9,10 @@ import CribIcon from '@mui/icons-material/Crib';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import SpaIcon from '@mui/icons-material/Spa';
 import { generateSubtitle } from '../../utils/action';
-import { useAppContext } from '../../Context';
+import { useAppContext } from '../../useAppContext';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButtonComponent from '../iconbutton';
+import { useTheme } from '@mui/material';
 
 interface IItem {
     id: string;
@@ -18,6 +21,7 @@ interface IItem {
 
 interface ICustomListProps extends ListProps {
     items: IItem[];
+    onItemDelete?: (item: any) => void;
 }
 
 const actionTypeListToInt: Record<number, string> = {
@@ -40,10 +44,25 @@ const actionIcons: Record<number, React.ReactNode> = {
 
 export default function CustomList({
     items,
+    onItemDelete,
     ...props
 }: ICustomListProps): React.JSX.Element {
     const navigate = useNavigate();
     const { translate } = useAppContext();
+
+    const theme = useTheme();
+
+    function handleItemClick(item: any) {
+        navigate(`/${item.action_type}/${item.id}`);
+    }
+
+    function handleDelete(event: React.MouseEvent, item: any) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (onItemDelete) {
+            onItemDelete(item);
+        }
+    }
 
     return (
         <List {...props}>
@@ -52,8 +71,9 @@ export default function CustomList({
                 return (
                     <ListItem
                         id={`new-item-list-${index}`}
-                        onClick={() => navigate(`/${item.action_type}/${item.id}`)}
+                        onClick={() => handleItemClick(item)}
                         key={item.id}
+                        sx={{ cursor: 'pointer' }}
                     >
                         <ListItemAvatar>
                             <Avatar sx={{ bgcolor: typeColor[item.action_type] }}>
@@ -62,11 +82,11 @@ export default function CustomList({
                         </ListItemAvatar>
                         <ListItemText
                             primary={translate(typeStr)}
-                            secondary={generateSubtitle(
-                                item,
-                                translate as unknown as boolean,
-                            )}
+                            secondary={generateSubtitle(item, translate)}
                         />
+                        <IconButtonComponent onClick={(e) => handleDelete(e, item)}>
+                            <DeleteIcon sx={{ color: theme.palette.error.main }} />
+                        </IconButtonComponent>
                     </ListItem>
                 );
             })}

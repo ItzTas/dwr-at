@@ -1,21 +1,32 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAppContext } from '../Context';
-import { Button, Diaper, Eat, Sleep, Grid, AppBar } from '../components';
-import { useEffect, useState } from 'react';
-import { drop, get, save, update } from '../services/database';
+import { useState, useEffect } from 'react';
 import { getTitle, validateFields } from '../utils/action';
-import { IDataSleep } from '../components/custom/sleep';
-import { IDataEat } from '../components/custom/eat';
-import { IDataDiaper } from '../components/custom/diaper';
+import Sleep, { IDataSleep } from '../components/custom/sleep';
+import Eat, { IDataEat } from '../components/custom/eat';
+import Diaper, { IDataDiaper } from '../components/custom/diaper';
+import { useAppContext } from '../useAppContext';
+import AppBarComponent from '../components/custom/appBar';
+import GridComponent from '../components/grid';
+import ButtonComponent from '../components/button';
 
 export default function Form(): React.JSX.Element {
     const { translate, showAlertMessage } = useAppContext();
     const navigate = useNavigate();
     const params = useParams();
-    const actionType = params.type;
+    const actionType = params.type || '';
     const id = params.id;
+    const [data, setData] = useState<any>([]);
 
-    const [data, setData] = useState<FormData>();
+    useEffect(() => {
+        if (id) {
+            const bebedataStr = localStorage.getItem('bebedata') || '[]';
+            const bebedata = JSON.parse(bebedataStr);
+            const existingItem = bebedata.find((item: any) => item.id == id);
+            if (existingItem) {
+                setData(existingItem);
+            }
+        }
+    }, [id]);
 
     function getForm(actionType: string): React.JSX.Element {
         switch (actionType) {
@@ -56,74 +67,69 @@ export default function Form(): React.JSX.Element {
                     />
                 );
             default:
-                return <Eat data={data} setData={setData} translate={translate} />;
+                return (
+                    <Eat
+                        data={data as unknown as IDataEat}
+                        setData={
+                            setData as unknown as React.Dispatch<
+                                React.SetStateAction<IDataEat>
+                            >
+                        }
+                        translate={translate}
+                    />
+                );
         }
     }
 
-    const loadData = async (id: string | undefined) => {
-        if (!id) return;
-        setData(get(id));
-    };
-
-    useEffect(() => {
-        if (params && params.id) {
-            loadData(params.id);
-        }
-    }, [params]);
-
-    const handleDelete = () => {
-        const confirmed = confirm('Deseja mesmo deletar este item?');
-        if (!confirmed) {
-            showAlertMessage('Ação cancelada', 'error');
+    function handleAdd() {
+        const fields = validateFields(data, actionType);
+        if (fields.length > 0) {
+            showAlertMessage(
+                `Os campos ${fields.join(', ')} são obrigatórios`,
+                'warning',
+            );
             return;
         }
-        drop(id);
-        showAlertMessage('Item deletado com sucesso!!!', 'success');
-        setTimeout(() => {
-            navigate('/');
-        }, 3000);
-    };
+        const bebedataStr = localStorage.getItem('bebedata') || '[]';
+        const bebedata = JSON.parse(bebedataStr);
+        const newData = { ...data, id: bebedata.length };
+        bebedata.push(newData);
+        localStorage.setItem('bebedata', JSON.stringify(bebedata));
+        showAlertMessage('Item criado com sucesso!!!', 'success');
+        navigate('/');
+        window.location.reload();
+    }
 
-    const handleSubmit = () => {
-        try {
-            const fields = validateFields(data, actionType);
-            if (fields.length > 0) {
-                showAlertMessage(
-                    `Os campos ${fields.join(', ')} são obrigatórios`,
-                    'warning',
-                );
+    function handleEdit() {
+        const oldItemsStr = localStorage.getItem('bebedata') || '[]';
+        const newItems = JSON.parse(oldItemsStr);
+        for (let i = 0; i < newItems.length; i++) {
+            const oldItem = newItems[i];
+            if (oldItem.id == id) {
+                newItems[i] = { ...oldItem, ...data }; // Atualiza o item com os novos dados
+                localStorage.setItem('bebedata', JSON.stringify(newItems));
+                navigate('/');
+                window.location.reload();
                 return;
             }
-
-            if (id) {
-                update(data, id);
-            } else {
-                save(data);
-            }
-
-            showAlertMessage(
-                `Item ${id ? 'editado' : 'criado'} com sucesso!!!`,
-                'success',
-            );
-            setTimeout(() => {
-                navigate('/');
-            }, 3000);
-        } catch (err) {
-            showAlertMessage(
-                `Erro ao ${id ? 'editar' : 'criar'} item: ` + err,
-                'error',
-            );
         }
-    };
+    }
+
+    function handleSubmit() {
+        if (!id) {
+            handleAdd();
+            return;
+        }
+        handleEdit();
+    }
 
     return (
         <>
-            <AppBar
-                title={translate(getTitle(actionType))}
+            <AppBarComponent
+                title={translate(getTitle(actionType as string))}
                 id={id}
-                onDelete={handleDelete}
             />
-            <Grid
+            <GridComponent
                 container={true}
                 spacing={2}
                 sx={{
@@ -132,9 +138,9 @@ export default function Form(): React.JSX.Element {
                     height: 'calc(100vh - 72px)',
                 }}
             >
-                <Grid item={true} xs={12}>
+                <GridComponent item={true} xs={12}>
                     {getForm(actionType as string)}
-                    <Button
+                    <ButtonComponent
                         type='submit'
                         fullWidth
                         variant='contained'
@@ -149,10 +155,10 @@ export default function Form(): React.JSX.Element {
                             margin: 0,
                         }}
                     >
-                        {translate('save')}
-                    </Button>
-                </Grid>
-            </Grid>
+                        {id ? translate('edit') : translate('save')}
+                    </ButtonComponent>
+                </GridComponent>
+            </GridComponent>
         </>
     );
 }

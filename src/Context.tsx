@@ -1,10 +1,4 @@
-import React, {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useState,
-} from 'react';
+import React, { createContext, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import duration from 'dayjs/plugin/duration';
 import utc from 'dayjs/plugin/utc';
@@ -19,7 +13,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(duration);
 
-interface AppContextProps {
+export interface AppContextProps {
     changeLanguage: (lang: string) => void;
     showSnackMessage: (message: string) => void;
     showAlertMessage: (
@@ -132,11 +126,3 @@ export default function AppProvider({ children }: Props): React.JSX.Element {
 }
 
 export { AppContext };
-
-export function useAppContext() {
-    const context = useContext(AppContext);
-    if (context === null) {
-        throw new Error('useAppContext must be used within an AppProvider');
-    }
-    return context;
-}

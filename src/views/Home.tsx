@@ -49,53 +49,28 @@ const styles = {
     },
 };
 
-const sampleItems = [
-    {
-        id: '1',
-        action_type: 1,
-    },
-    {
-        id: '2',
-        action_type: 2,
-    },
-    {
-        id: '3',
-        action_type: 3,
-    },
-    {
-        id: '4',
-        action_type: 1,
-    },
-    {
-        id: '5',
-        action_type: 2,
-    },
-];
-
 export default function Home() {
     const navigate = useNavigate();
     const theme = useTheme();
 
-    const storedData = localStorage.getItem('bebedata');
-    const [data, setData] = useState(storedData ? JSON.parse(storedData) : []);
-
-    // function updateData(newData: any[]) {
-    //     setData(newData);
-    //     localStorage.setItem('bebedata', JSON.stringify(newData));
-    // }
+    const [babyData, setBabyData] = useState<any>({});
+    const [babyInfos, setBabyInfos] = useState<any>({});
 
     useEffect(() => {
-        const storedData = localStorage.getItem('bebedata');
-        if (storedData) {
-            setData(JSON.parse(storedData));
-        }
+        const storedBabyData = localStorage.getItem('bebedata') || '[]';
+        setBabyData(JSON.parse(storedBabyData));
+        const storedBabyInfos = localStorage.getItem('babyinfos') || '{}';
+        setBabyInfos(JSON.parse(storedBabyInfos));
     }, []);
 
-    useEffect(() => {
-        if (data.length > 0) {
-            localStorage.setItem('bebedata', JSON.stringify(data));
-        }
-    }, [data]);
+    function handleItemdelete(item: any) {
+        const id = item.id;
+        const bebedataStr = localStorage.getItem('bebedata') || '[]';
+        const bebedata = JSON.parse(bebedataStr);
+        const newData = bebedata.filter((item: any) => item.id !== id);
+        setBabyData(newData);
+        localStorage.setItem('bebedata', JSON.stringify(newData));
+    }
 
     return (
         <GridComponent container={true}>
@@ -123,8 +98,8 @@ export default function Home() {
                                 sx={{
                                     ...styles.iconButton,
                                     border: `2px solid ${theme.palette.primary.main}`,
+                                    cursor: 'not-allowed',
                                 }}
-                                onClick={() => navigate('/dashboard')}
                             >
                                 <SignalCellularAltIcon
                                     sx={{
@@ -140,7 +115,7 @@ export default function Home() {
                                 }}
                             >
                                 <TextComponent component='p' sx={{ ...styles.text2 }}>
-                                    54 cm
+                                    {babyInfos?.height || 'N/A'} cm
                                 </TextComponent>
                                 <TextComponent component='p' sx={{ ...styles.text3 }}>
                                     Comprimento
@@ -162,10 +137,10 @@ export default function Home() {
                                 }}
                             >
                                 <TextComponent component='p' sx={{ ...styles.text1 }}>
-                                    Benício
+                                    {babyInfos?.name || 'Nome não definido'}
                                 </TextComponent>
                                 <TextComponent component='p' sx={{ ...styles.text3 }}>
-                                    x Dias
+                                    --
                                 </TextComponent>
                             </BoxComponent>
                         </BoxComponent>
@@ -197,7 +172,7 @@ export default function Home() {
                                 }}
                             >
                                 <TextComponent component='p' sx={{ ...styles.text2 }}>
-                                    4.200 kg
+                                    {babyInfos?.weight || 'N/A'} kg
                                 </TextComponent>
                                 <TextComponent component='p' sx={{ ...styles.text3 }}>
                                     Peso
@@ -224,8 +199,8 @@ export default function Home() {
                 >
                     <GridComponent xs={12} item={true}>
                         <GridComponent container={true} spacing={2}>
-                            {ACTIONS.map((action) => (
-                                <GridComponent xs={4}>
+                            {ACTIONS.map((action, i) => (
+                                <GridComponent xs={4} key={`${action.actionType}-${i}`}>
                                     <CardNewItemComponent
                                         title={action.title}
                                         Icon={action.Icon}
@@ -242,13 +217,14 @@ export default function Home() {
                             }}
                         >
                             <GridComponent xs={12}>
-                                {data ? (
+                                {babyData.length > 0 ? (
                                     <CustomList
                                         sx={{
                                             overflow: 'auto',
                                             maxHeight: '56.5vh',
                                         }}
-                                        items={data}
+                                        items={babyData}
+                                        onItemDelete={handleItemdelete}
                                     />
                                 ) : null}
                             </GridComponent>

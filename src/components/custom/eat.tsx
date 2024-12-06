@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
-import { Button, DateTimePicker, Grid, TextField } from '..';
-import { handleInputChange, selectItem } from '../../utils/action';
 import { adjustDateTimeForTimezone } from '../../utils/core';
+import GridComponent from '../grid';
+import TextFieldComponent from '../textfield';
+import ButtonComponent from '../button';
+import DateTimePickerComponent from '../dateTimePicker';
 
 export interface IDataEat {
     type: number;
@@ -29,30 +31,49 @@ export default function Eat({
     }, [data, setData]);
 
     return (
-        <Grid container spacing={2}>
-            <Grid item xs={12}>
-                <Button
-                    color={data.type === 1 ? 'secondary' : 'primary'}
-                    onClick={() => {
-                        handleInputChange('side', null, data, setData);
-                        handleInputChange('end_date', null, data, setData);
-                        selectItem(1, 'type', data, setData);
+        <GridComponent container spacing={2}>
+            <GridComponent item xs={12}>
+                <GridComponent
+                    container
+                    spacing={2}
+                    sx={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
                     }}
                 >
-                    {translate('eat-bottle')}
-                </Button>
-                <Button
-                    color={data.type === 2 ? 'secondary' : 'primary'}
-                    onClick={() => {
-                        handleInputChange('quantity', null, data, setData);
-                        selectItem(2, 'type', data, setData);
-                    }}
-                >
-                    {translate('eat-bosom')}
-                </Button>
-            </Grid>
-            <Grid item xs={12}>
-                <DateTimePicker
+                    <GridComponent item>
+                        <ButtonComponent
+                            color={data.type === 1 ? 'secondary' : 'primary'}
+                            onClick={() => {
+                                setData((prevData) => ({
+                                    ...prevData,
+                                    side: null,
+                                    end_date: null,
+                                    type: 1,
+                                }));
+                            }}
+                        >
+                            {translate('eat-bottle')}
+                        </ButtonComponent>
+                    </GridComponent>
+                    <GridComponent item>
+                        <ButtonComponent
+                            color={data.type === 2 ? 'secondary' : 'primary'}
+                            onClick={() => {
+                                setData((prevData) => ({
+                                    ...prevData,
+                                    quantity: null,
+                                    type: 2,
+                                }));
+                            }}
+                        >
+                            {translate('eat-bosom')}
+                        </ButtonComponent>
+                    </GridComponent>
+                </GridComponent>
+            </GridComponent>
+            <GridComponent item xs={12}>
+                <DateTimePickerComponent
                     value={
                         data?.start_date ? adjustDateTimeForTimezone(data.start_date) : null
                     }
@@ -66,18 +87,16 @@ export default function Eat({
                     ampm={false}
                     format='DD/MM/YYYY HH:mm'
                     onChange={(value: Date | null) => {
-                        handleInputChange(
-                            'start_date',
-                            value ? new Date(value.toString()) : null,
-                            data,
-                            setData,
-                        );
+                        setData((prevData) => ({
+                            ...prevData,
+                            start_date: value ? new Date(value.toString()) : null,
+                        }));
                     }}
                 />
-            </Grid>
+            </GridComponent>
             {data.type === 2 ? (
-                <Grid item xs={12}>
-                    <DateTimePicker
+                <GridComponent item xs={12}>
+                    <DateTimePickerComponent
                         value={
                             data?.end_date ? adjustDateTimeForTimezone(data.end_date) : null
                         }
@@ -87,70 +106,101 @@ export default function Eat({
                         ampm={false}
                         format='DD/MM/YYYY HH:mm'
                         onChange={(value: Date | null) => {
-                            handleInputChange(
-                                'end_date',
-                                value ? new Date(value.toString()) : null,
-                                data,
-                                setData,
-                            );
+                            setData((prevData) => ({
+                                ...prevData,
+                                end_date: value ? new Date(value.toString()) : null,
+                            }));
                         }}
                     />
-                </Grid>
+                </GridComponent>
             ) : null}
             {data.type === 1 ? (
-                <Grid item xs={12}>
-                    <TextField
-                        value={data?.quantity ? data.quantity : ''}
+                <GridComponent item xs={12}>
+                    <TextFieldComponent
+                        value={data?.quantity ?? ''}
                         label={translate('quantity') + ' (ml)'}
                         onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                            handleInputChange('quantity', event.target.value, data, setData);
+                            const quantity = event.target.value
+                                ? Number(event.target.value)
+                                : null;
+                            setData((prevData) => ({
+                                ...prevData,
+                                quantity,
+                            }));
                         }}
                         name='quantity'
                         type='number'
                         fullWidth
                     />
-                </Grid>
+                </GridComponent>
             ) : (
-                <Grid item xs={12}>
-                    <Button
-                        color={data.side === 1 ? 'secondary' : 'primary'}
-                        onClick={() => {
-                            selectItem(1, 'side', data, setData);
+                <GridComponent item xs={12}>
+                    <GridComponent
+                        container
+                        spacing={2}
+                        sx={{
+                            justifyContent: 'center',
+                            alignItems: 'center',
                         }}
                     >
-                        {translate('left')}
-                    </Button>
-                    <Button
-                        color={data.side === 2 ? 'secondary' : 'primary'}
-                        onClick={() => {
-                            selectItem(2, 'side', data, setData);
-                        }}
-                    >
-                        {translate('right')}
-                    </Button>
-                    <Button
-                        color={data.side === 3 ? 'secondary' : 'primary'}
-                        onClick={() => {
-                            selectItem(3, 'side', data, setData);
-                        }}
-                    >
-                        {translate('both')}
-                    </Button>
-                </Grid>
+                        <GridComponent item>
+                            <ButtonComponent
+                                color={data.side === 1 ? 'secondary' : 'primary'}
+                                onClick={() => {
+                                    setData((prevData) => ({
+                                        ...prevData,
+                                        side: 1,
+                                    }));
+                                }}
+                            >
+                                {translate('left')}
+                            </ButtonComponent>
+                        </GridComponent>
+                        <GridComponent item>
+                            <ButtonComponent
+                                color={data.side === 2 ? 'secondary' : 'primary'}
+                                onClick={() => {
+                                    setData((prevData) => ({
+                                        ...prevData,
+                                        side: 2,
+                                    }));
+                                }}
+                            >
+                                {translate('right')}
+                            </ButtonComponent>
+                        </GridComponent>
+                        <GridComponent item>
+                            <ButtonComponent
+                                color={data.side === 3 ? 'secondary' : 'primary'}
+                                onClick={() => {
+                                    setData((prevData) => ({
+                                        ...prevData,
+                                        side: 3,
+                                    }));
+                                }}
+                            >
+                                {translate('both')}
+                            </ButtonComponent>
+                        </GridComponent>
+                    </GridComponent>
+                </GridComponent>
             )}
-            <Grid item xs={12}>
-                <TextField
+            <GridComponent item xs={12}>
+                <TextFieldComponent
                     value={data?.observation || ''}
                     label={translate('observation')}
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        handleInputChange('observation', event.target.value, data, setData);
+                        setData((prevData) => ({
+                            ...prevData,
+                            observation: event.target.value,
+                        }));
                     }}
                     name='observation'
                     rows={6}
                     fullWidth
                     multiline
                 />
-            </Grid>
-        </Grid>
+            </GridComponent>
+        </GridComponent>
     );
 }

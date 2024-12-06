@@ -7,8 +7,8 @@ import AvatarComponent from '../components/avatar';
 import ButtonComponent from '../components/button';
 import TextFieldComponent from '../components/textfield';
 import TextComponent from '../components/typography';
-import { useAppContext } from '../Context';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAppContext } from '../useAppContext';
 
 const styles = {
     centerBox: {
